@@ -9,7 +9,7 @@ on:
   #以上勿动
   schedule:
     # UTC4:00(北京UTC+8 12:00点)触发任务
-    - cron: '0 4 * * *'
+    - cron: '5 10 * * *'
 
 env:
   push: true #不需要推送的请改为false
