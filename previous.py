@@ -30,13 +30,13 @@ for member in memberlist:
                 saveOldHistory = requests.post('https://youthstudy.12355.net/saomah5/api/young/course/chapter/saveHistory', headers=headers,data=data)
                 print(json.loads(saveOldHistory.text).get('msg'),end="")
                 saveOldHistory_output=saveOldHistory_output+json.loads(saveOldHistory.text).get('msg')
-            # origin['result']=origin['result']+'\n往期课程打卡：'+saveOldHistory_output
+        print('\n')
         for result in origin:
             if result['member'] == member:
-                result['result']+='\n往期课程打卡：'+saveOldHistory_output
+                result['result']+='<br><b>往期课程打卡：</b>'+saveOldHistory_output
     except:
         for result in origin:
             if result['member'] == member:
-                result['result']+='\n往期课程打卡：失败'
+                result['result']+='<br><b>往期课程打卡：</b>失败**'
     with open('result.json','w+',encoding='utf8') as new_file:
         new_file.write(json.dumps(origin))

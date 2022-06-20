@@ -34,7 +34,7 @@ jobs:
         run: sed -i '1i\token="${{ secrets.PUSHTOKEN }}"' push.py
 
       - name: Set up env
-        run: pip install -r requirement.txt
+        run: pip install -r requirements.txt
           
       - name: Run main command
         run: python main.py
