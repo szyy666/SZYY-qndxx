@@ -40,6 +40,7 @@ jobs:
         run: python main.py
 
       - name: Submit previous activity
+        if: github.event.inputs.previous == 'true'
         run: python previous.py
 
       - name: Push result to Wechat by pushplus
