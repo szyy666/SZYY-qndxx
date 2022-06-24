@@ -3,9 +3,13 @@ on:
   workflow_dispatch:
     inputs:
       previous:
-        description: '是否打卡往期课程(true/false)'
+        description: '是否打卡往期课程'
         required: true
-        default: 'false'
+        default: 'no'
+        type: choice
+        options: 
+        - 'yes'
+        - 'no'
   #以上勿动
   schedule:
     # UTC4:00(北京UTC+8 12:00点)触发任务
@@ -40,7 +44,7 @@ jobs:
         run: python main.py
 
       - name: Submit previous activity
-        if: github.event.inputs.previous == 'true'
+        if: github.event.inputs.previous == 'yes'
         run: python previous.py
 
       - name: Push result to Wechat by pushplus
