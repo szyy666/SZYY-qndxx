@@ -1,8 +1,8 @@
-import requests,json,time,re
+import requests,json,time,re,os
 import urllib.parse
 
-#如不使用github actions，请删除下方注释并手动设定member（mid或者X-Litemall-Token，多个请以|隔开）
-#member=''
+#如不使用github actions，请手动设定member（mid或者X-Litemall-Token，多个请以|隔开）
+member=''
 apiHeaders = {
   'Host': 'tuanapi.12355.net',
   'Connection': 'keep-alive',
@@ -48,8 +48,13 @@ headers = {
     'Referer': 'https://youthstudy.12355.net/h5/',
     'Accept-Language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
 }
+if member == '' :
+    try:
+        member=os.environ['MEMBER']
+    except:
+        pass
 #检查member
-if 'member' in locals().keys():
+if member != '':
     pass
 else:
     exit('+================+\n| member未定义！ |\n+================+')
@@ -71,6 +76,9 @@ class GetProfile:
             return('无徽章信息')
     def name(self):
         return(self.profile_dist['data']['entity']['nickName'])
+    def StudyRecords(self):
+        return(json.loads(requests.get('https://youthstudy.12355.net/saomah5/api/young/course/record/page?pageNo=1&pageSize=300',headers=headers).text)['data']['list'])
+
 #转换mid
 def ConverMidToXLToken(raw):
     if re.match('[a-zA-Z]',raw):
@@ -117,8 +125,18 @@ if __name__ == '__main__':#防止import的时候被执行
             }
             # 打卡
             print('\n打卡最新一期青年大学习:')
-            saveHistory = requests.post('https://youthstudy.12355.net/saomah5/api/young/course/chapter/saveHistory', headers=headers, data=data)
-            print('更新日期:',updateDate,'名称:',name,'打卡状态:',json.loads(saveHistory.text).get('msg'))
+            for records in profile.StudyRecords():
+                if records['dataName']==name:
+                    IsStudied=True
+                    break
+                else:
+                    IsStudied=False
+            if IsStudied==True:
+                StudyStatus='当期已学习，自动跳过'
+            else:
+                saveHistory = requests.post('https://youthstudy.12355.net/saomah5/api/young/course/chapter/saveHistory', headers=headers, data=data)
+                StudyStatus=json.loads(saveHistory.text).get('msg')
+            print('更新日期:',updateDate,'名称:',name,'打卡状态:',StudyStatus)
 
 
             #学习频道
@@ -202,11 +220,14 @@ if __name__ == '__main__':#防止import的时候被执行
             output={}
             output['member']=member
             output['name']=profile.name()
-            output['status']=name+'签到'+json.loads(saveHistory.text).get('msg')
-            output['result']='<b>更新日期:</b>'+updateDate+'<br><b>名称:</b>'+name+'<br><b>打卡状态:</b>'+json.loads(saveHistory.text).get('msg')+'<br><b>=====学习频道=====</b><br>'+channel_output+'<br><b>我要答题:</b>'+submit_output
+            if IsStudied==True:
+                output['status']='passed'
+            else:
+                output['status']=name+'签到'+json.loads(saveHistory.text).get('msg')
+            output['result']='<b>更新日期:</b>'+updateDate+'<br><b>名称:</b>'+name+'<br><b>打卡状态:</b>'+StudyStatus+'<br><b>=====学习频道=====</b><br>'+channel_output+'<br><b>我要答题:</b>'+submit_output
             output['score']=score
             output_list.append(output)
         except:
-            output_list.append({'member':member,'status':'error','result':'打卡状态:失败'})
+            output_list.append({'member':member,'status':'error'})
     with open('result.json','w+',encoding='utf8') as new_file:
         new_file.write(json.dumps(output_list))

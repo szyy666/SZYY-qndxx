@@ -17,6 +17,8 @@ on:
 
 env:
   push: true #不需要推送的请改为false
+  MEMBER: ${{ secrets.mid }}
+  PUSHTOKEN: ${{ secrets.PUSHTOKEN }}
 
 jobs:
   youthstudymark:
@@ -24,18 +26,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.7
-
-      - name: Add All Members to python file
-        run: sed -i '1i\member="${{ secrets.mid }}"' main.py
-
-      - name: Add push token
-        if: env.push == 'true'
-        run: sed -i '1i\token="${{ secrets.PUSHTOKEN }}"' push.py
 
       - name: Set up env
         run: pip install -r requirements.txt
