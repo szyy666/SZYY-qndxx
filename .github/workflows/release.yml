@@ -1,0 +1,54 @@
+name: Pack_And_Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      Release_Version:
+        description: '发布版本'
+        required: true
+        default: 'v1.0'
+      Release_Describe:
+        description: '版本说明'
+        required: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    if: github.repository == 'Chenghow/youthstudy-tool'
+    steps:
+      - name: Download Code
+        uses: actions/checkout@v2
+
+      - name: Dependces
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install pyinstaller
+          pip3 install -r requirements.txt
+
+      - name: Pack to exe
+        run: |
+          mkdir ${{ github.event.inputs.Release_Version }}
+          pyinstaller -F main.py
+          pyinstaller -F previous.py
+          mv dist/*.exe ${{ github.event.inputs.Release_Version }}/
+          mv README.md ${{ github.event.inputs.Release_Version }}/
+          mv LICENSE ${{ github.event.inputs.Release_Version }}/
+          mv config.ini ${{ github.event.inputs.Release_Version }}/
+          Compress-Archive -Path ${{ github.event.inputs.Release_Version }} -DestinationPath ${{ github.event.inputs.Release_Version }}.zip
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.event.inputs.Release_Version }}
+          path: ${{ github.event.inputs.Release_Version }}
+      - name: create release and upload asset
+        if: ${{ github.event.inputs.Release_Version != 'none' && github.event.inputs.Release_Version != '' }}
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ github.event.inputs.Release_Version }}.zip
+          file_glob: true
+          tag: ${{ github.event.inputs.Release_Version }}
+          overwrite: true
+          release_name: "${{ github.event.inputs.Release_Version }}"
+          body: "${{ github.event.inputs.Release_Describe }}"
+     
