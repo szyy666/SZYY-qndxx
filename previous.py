@@ -10,7 +10,7 @@ except:
 #获取季
 for member in memberlist:
     try:
-        print("往期课程打卡:")
+        print("=====往期课程打卡=====")
         headers['X-Litemall-Token']=ConverMidToXLToken(member)
         getChapterList = requests.get('https://youthstudy.12355.net/saomah5/api/young/course/list', headers=headers)
         chapterList=json.loads(getChapterList.text).get("data").get("list")
@@ -37,6 +37,6 @@ for member in memberlist:
     except:
         for result in origin:
             if result['member'] == member:
-                result['result']+='<br><b>往期课程打卡：</b>失败**'
+                result['result']+='<br><b>往期课程打卡：</b>失败'
     with open('result.json','w+',encoding='utf8') as new_file:
         new_file.write(json.dumps(origin))

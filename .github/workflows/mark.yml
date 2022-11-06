@@ -16,7 +16,6 @@ on:
     - cron: '5 10 * * *'
 
 env:
-  push: true #不需要推送的请改为false
   MEMBER: ${{ secrets.mid }}
   PUSHTOKEN: ${{ secrets.PUSHTOKEN }}
 
@@ -33,10 +32,9 @@ jobs:
       - name: Run main command
         run: python main.py
 
-      - name: Submit previous activity
+      - name: Submit previous studies
         if: github.event.inputs.previous == 'yes'
         run: python previous.py
 
-      - name: Push result to Wechat by pushplus
-        if: env.push == 'true'
-        run: python push.py
+      - name: Summary & Push
+        run: python summary.py

@@ -3,8 +3,9 @@ with open('result.json','r',encoding='utf8') as origin_file:
     origin=origin_file.read()
 origin=json.loads(origin)
 pushdata={}
+config=main.config
 #推送渠道
-pushdata['channel']='wechat'
+pushdata['channel']=config['push']['channel']
 pushdata['template']='html'
 
 # 具体请查看pushplus api文档https://www.pushplus.plus/doc/guide/api.html
@@ -18,7 +19,8 @@ if token == '':
 LatestStudy=json.loads(requests.get('https://youthstudy.12355.net/saomah5/api/young/chapter/new',headers=main.headers).text)
 StudyId=re.search('[a-z0-9]{10}',LatestStudy['data']['entity']['url']).group(0)
 StudyName=LatestStudy['data']['entity']['name']
-pushdata['content']='<a href="'+'https://finishpage.dgstu.tk/?id='+StudyId+'&name='+StudyName+'">（伪）当前期完成页</a><br>'
+Finishpage='<a href="'+'https://finishpage.dgstu.tk/?id='+StudyId+'&name='+StudyName+'">（伪）当前期完成页</a><br>'
+pushdata['content']=Finishpage
 
 time.sleep(60)#平台统计有延迟
 errorcount=0
@@ -55,7 +57,7 @@ else:
 if errorcount!=len(main.memberlist):
     titledone=False
     for i in origin:
-        if i['status']!=('error'and'passed'):
+        if (i['status']!='error') and (i['status']!='passed'):
             if titledone==False:
                 pushdata['title']='['+str(len(main.memberlist)-errorcount)+'/'+str(len(main.memberlist))+']'+i['status']+'啦'
                 titledone=True#若有打卡成功的则锁定标题
@@ -67,9 +69,27 @@ else:
     pushdata['content']='所有mid或X-Litemall-Token皆打卡失败'
 
 #向pushplus发出推送请求
-pushdata['token']=token
-push=json.loads(requests.post('http://www.pushplus.plus/send/',data=pushdata).text)
-if push['code'] == 200:
-    print('推送成功')
-else:
-    exit('推送失败：'+push['msg'])
+try:
+    if config['push']['push']=='yes':
+        pushdata['token']=token
+        push=json.loads(requests.post('http://www.pushplus.plus/send/',data=pushdata).text)
+        if push['code'] == 200:
+            print('推送成功')
+        else:
+            exit('推送失败：'+push['msg'])
+except:
+    pass
+
+#Actions Summary
+print('正在生成运行结果')
+summary='## 执行结果\n#### PS：由于安全性问题，详细结果请使用推送功能\n'+Finishpage+'\n|序号|青年大学习打卡状态|\n|-|-|'
+count=0
+for i in origin:
+    count+=1
+    summary+='\n|'+str(count)+'|'
+    if i['status'] != 'error':
+        summary+='✅|'
+    else:
+        summary+='❌|'
+with open(os.environ['GITHUB_STEP_SUMMARY'],'w+',encoding='utf8') as finaloutput:
+    finaloutput.write(summary)
