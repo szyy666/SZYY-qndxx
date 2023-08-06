@@ -125,12 +125,13 @@ for mem in origin:
 
 
 # 推送
-if config['push']['method']=='pushplus':
-    tokenhandler('pushplus',['token'])
-    pushplus.push(title,htmlcontent,config['pushplus'])
-elif config['push']['method']=='email':
-    tokenhandler('email',['host','port','sender','password'])
-    mail.push(title,htmlcontent,config['email'])
+if config['push']['push']=='yes':
+    if config['push']['method']=='pushplus':
+        tokenhandler('pushplus',['token'])
+        pushplus.push(title,htmlcontent,config['pushplus'])
+    elif config['push']['method']=='email':
+        tokenhandler('email',['host','port','sender','password'])
+        mail.push(title,htmlcontent,config['email'])
 
 #Actions Summary
 try:
