@@ -4,6 +4,8 @@ def push(title,htmlcontent,config):
     pushplsdata['channel']=config['channel']
     pushplsdata['template']='html'
     pushplsdata['title']=title
+    if pushplsdata['channel']=='webhook':
+        pushplsdata['webhook']=config['webhook']
     pushplsdata['content']=htmlcontent
     token=config['token']
     pushplsdata['token']=token

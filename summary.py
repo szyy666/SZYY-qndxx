@@ -1,6 +1,6 @@
 import requests,json,main,time,os,re
 from urllib import parse
-from push import pushplus,email
+from push import pushplus,mail
 
 with open('result.json','r',encoding='utf8') as origin_file:
     origin=origin_file.read()
@@ -130,7 +130,7 @@ if config['push']['method']=='pushplus':
     pushplus.push(title,htmlcontent,config['pushplus'])
 elif config['push']['method']=='email':
     tokenhandler('email',['host','port','sender','password'])
-    email.push(title,htmlcontent,config['email'])
+    mail.push(title,htmlcontent,config['email'])
 
 #Actions Summary
 try:
