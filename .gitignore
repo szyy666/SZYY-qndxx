@@ -1,4 +1,4 @@
 result.*
-*test*.py
+*test*.*
 __pycache__
 member.txt
