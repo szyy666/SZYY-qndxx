@@ -19,7 +19,7 @@
 - 多用户批量执行(Beta)
 ## 使用方法
 #### 注：以下所提到的“仓库”皆为你自己Fork的仓库
-1. Fork本仓库
+1. Fork本仓库（更加建议使用[import](https://github.com/new/import)导入本仓库）
 2. 在仓库的Settings-Secrets-Actions中分别添加以下两个Secrets并按实际情况填写
     - PUSHTOKEN（pushplus的token，**如不需要推送请将`config.ini`中的`push = yes`字段改为`push = no`**）
     - mid 【兼容X-Litemall-Token（可混用），多个请以|隔开】（智慧团建-认证资料-生成电子团员证，点击最下方生成按钮。在团员证页面复制链接 应为：`https://tuan.12355.net/wechat/view/information/member_certification_generated.html?memberId=`**xxxxxx**`&showMemberAdditionNames=&showMemberRewardIds=&isShowAllFee=true` 其中xxxxxx即为mid，X-Litemall-Token需抓包获取，不推荐使用）
@@ -35,6 +35,8 @@
 ## ⚠安全性警告
 - 使用mid或者XLITEMALLTOKEN可以通过api获取大量个人信息，请不要在任何地方公开（包括但不限于commit至公开仓库、发表在issue中等等）
 - 因此，**请不要在公开仓库的secret以外的任何位置输入您的mid或者XLITEMALLTOKEN**
+- 本项目使用了Github Actions，可能违反TOS以导致不可预计的结果（封禁仓库、Github帐号等），使用本项目带来的一切结果由您自己承担
+- 建议使用[Github的import功能](https://github.com/new/import)而不是fork以减小风险
 
 ## 未来支持的功能
 - ~~学习频道薅羊毛~~
