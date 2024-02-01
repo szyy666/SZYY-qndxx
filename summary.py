@@ -24,7 +24,7 @@ StudyId=re.search('[a-z0-9]{10}',LatestStudy['data']['entity']['url']).group(0)
 StudyName=LatestStudy['data']['entity']['name']
 FinishpageUrl='https://finishpage.dgstu.tk/?id='+StudyId+'&name='+parse.quote(StudyName)
 
-# time.sleep(60)#平台统计有延迟
+time.sleep(30)#平台统计有延迟
 errorcount=0
 for member in origin:
     if member['status']== 'error':
@@ -61,9 +61,11 @@ if errorcount!=len(main.memberlist):
             if titledone==False:
                 title='['+str(len(main.memberlist)-errorcount)+'/'+str(len(main.memberlist))+']'+i['status']+'啦'
                 titledone=True#若有打卡成功的则锁定标题
+                StudySuccess=True
         else:
             if titledone==False:
                 title='['+str(len(main.memberlist)-errorcount)+'/'+str(len(main.memberlist))+']'+'积分任务执行完毕'
+                StudySuccess=False
 else:
     title='任务执行失败'
     content='所有mid或X-Litemall-Token皆打卡失败'
@@ -126,18 +128,21 @@ for mem in origin:
 
 # 推送
 if config['push']['push']=='yes':
-    if config['push']['method']=='pushplus':
-        tokenhandler('pushplus',['token'])
-        pushplus.push(title,htmlcontent,config['pushplus'])
-    elif config['push']['method']=='email':
-        tokenhandler('email',['host','port','sender','password'])
-        email.push(title,htmlcontent,config['email'])
-    elif config['push']['method']=='telegram':
-        tokenhandler('telegram',['botToken','userId'])
-        serverChan.push(title,textcontent,config['telegram'])
-    elif config['push']['method']=='severChan':
-        tokenhandler('severChan',['key'])
-        serverChan.push(title,textcontent,config['severChan'])
+    if (config['push']['time']=='Success' and StudySuccess==True) or config['push']['time']=='all':
+        if config['push']['method']=='pushplus':
+            tokenhandler('pushplus',['token'])
+            pushplus.push(title,htmlcontent,config['pushplus'])
+        elif config['push']['method']=='email':
+            tokenhandler('email',['host','port','sender','password'])
+            email.push(title,htmlcontent,config['email'])
+        elif config['push']['method']=='telegram':
+            tokenhandler('telegram',['botToken','userId'])
+            serverChan.push(title,textcontent,config['telegram'])
+        elif config['push']['method']=='severChan':
+            tokenhandler('severChan',['key'])
+            serverChan.push(title,textcontent,config['severChan'])
+    else:
+        print('跳过推送')
 
 #Actions Summary
 try:

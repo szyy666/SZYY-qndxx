@@ -31,7 +31,7 @@
 4. 在侧边栏找到“GitHub Actions Youthstudy Bot”并点击，再点击右侧的“Enable workflow”启用此action
 - 如本地使用请在main.py中手动指定xLitemallToken或mid
 - 默认每天中午12点(UTC+8)执行定时任务（由于github action的特性，可能会延迟20分钟左右），如需修改请手动更改`- cron: '0 4 * * *'`字段，生成表达式可以用[https://crontab.guru/](https://crontab.guru/)
-
+- 若想仅在学习签到成功后进行推送，请将`config.ini`中`push`节的`time`值设置为`Success`
 ## ⚠安全性警告
 - 使用mid或者XLITEMALLTOKEN可以通过api获取大量个人信息，请不要在任何地方公开（包括但不限于commit至公开仓库、发表在issue中等等）
 - 因此，**请不要在公开仓库的secret以外的任何位置输入您的mid或者XLITEMALLTOKEN**
